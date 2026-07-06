@@ -16,6 +16,13 @@ log = logging.getLogger("bot")
 TOKEN = os.getenv("DISCORD_TOKEN")
 GUILD_ID = os.getenv("GUILD_ID")  # opcional: si está, sincroniza slash commands solo ahí (instantáneo)
 
+# --- DIAGNÓSTICO TEMPORAL: borrar estas 5 líneas una vez resuelto el problema de la key ---
+_debug_url = os.getenv("SUPABASE_URL")
+_debug_key = os.getenv("SUPABASE_KEY")
+log.info(f"[DEBUG] SUPABASE_URL leída: {repr(_debug_url)}")
+log.info(f"[DEBUG] SUPABASE_KEY leída (primeros/últimos 6 chars): {_debug_key[:6] if _debug_key else None}...{_debug_key[-6:] if _debug_key else None} (largo total: {len(_debug_key) if _debug_key else 0})")
+# --- FIN DIAGNÓSTICO ---
+
 intents = discord.Intents.default()
 intents.message_content = True   # necesario para triggers y antispam
 intents.members = True           # necesario para join-roles y reaction roles
