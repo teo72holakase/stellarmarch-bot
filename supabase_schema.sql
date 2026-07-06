@@ -10,7 +10,8 @@ create table if not exists guild_config (
     ticket_category_id bigint,
     ticket_log_channel_id bigint,
     join_role_ids bigint[] default '{}',
-    antispam_enabled boolean default true
+    antispam_enabled boolean default true,
+    honeypot_channel_id bigint
 );
 
 -- Paneles de tickets (puede haber varios paneles distintos, ej: "Soporte", "Reportar jugador", "Reclamar territorio")
