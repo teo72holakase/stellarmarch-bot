@@ -13,6 +13,7 @@ Estrategia (sin necesitar IA ni servicios externos):
 
 import time
 import re
+import asyncio
 from collections import defaultdict, deque
 
 import discord
@@ -75,7 +76,7 @@ class AntiSpam(commands.Cog):
         if isinstance(message.author, discord.Member) and message.author.guild_permissions.administrator:
             return  # nunca sancionamos admins
 
-        config = get_guild_config(message.guild.id)
+        config = await asyncio.to_thread(get_guild_config, message.guild.id)
         if not config.get("antispam_enabled", True):
             return
 

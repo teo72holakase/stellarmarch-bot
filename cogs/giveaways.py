@@ -12,7 +12,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands, tasks
 
-from utils.db import supabase
+from utils.db import supabase, run_query
 from utils.permissions import admin_check
 
 DURATION_REGEX = re.compile(r"(\d+)([smhd])")
@@ -116,7 +116,10 @@ class Giveaways(commands.Cog):
     @tasks.loop(seconds=30)
     async def check_giveaways(self):
         now = datetime.now(timezone.utc).isoformat()
-        rows = supabase.table("giveaways").select("*").eq("ended", False).lte("ends_at", now).execute().data or []
+        result = await run_query(
+            lambda: supabase.table("giveaways").select("*").eq("ended", False).lte("ends_at", now).execute()
+        )
+        rows = result.data or []
         for row in rows:
             await self._finish_giveaway(row)
 
@@ -125,7 +128,9 @@ class Giveaways(commands.Cog):
         await self.bot.wait_until_ready()
 
     async def _finish_giveaway(self, giveaway: dict):
-        supabase.table("giveaways").update({"ended": True}).eq("id", giveaway["id"]).execute()
+        await run_query(
+            lambda: supabase.table("giveaways").update({"ended": True}).eq("id", giveaway["id"]).execute()
+        )
 
         guild = self.bot.get_guild(giveaway["guild_id"])
         if not guild:
@@ -134,7 +139,10 @@ class Giveaways(commands.Cog):
         if not channel:
             return
 
-        entries = supabase.table("giveaway_entries").select("*").eq("giveaway_id", giveaway["id"]).execute().data or []
+        entries_result = await run_query(
+            lambda: supabase.table("giveaway_entries").select("*").eq("giveaway_id", giveaway["id"]).execute()
+        )
+        entries = entries_result.data or []
         participant_ids = [e["user_id"] for e in entries]
 
         valid_members = []

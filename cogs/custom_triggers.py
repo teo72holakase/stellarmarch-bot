@@ -10,7 +10,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from utils.db import supabase
+from utils.db import supabase, run_query
 from utils.permissions import admin_check
 
 
@@ -48,7 +48,10 @@ class CustomTriggers(commands.Cog):
         if message.author.bot or not message.guild:
             return
 
-        rows = supabase.table("custom_triggers").select("*").eq("guild_id", message.guild.id).execute().data or []
+        rows = await run_query(
+            lambda: supabase.table("custom_triggers").select("*").eq("guild_id", message.guild.id).execute()
+        )
+        rows = rows.data or []
         content_lower = message.content.lower()
 
         for row in rows:

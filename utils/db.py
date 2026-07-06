@@ -4,6 +4,7 @@ Todos los cogs importan `supabase` desde aquí en vez de crear su propio cliente
 """
 
 import os
+import asyncio
 from supabase import create_client, Client
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
@@ -31,3 +32,14 @@ def get_guild_config(guild_id: int) -> dict:
 def update_guild_config(guild_id: int, **fields):
     get_guild_config(guild_id)  # asegura que exista
     supabase.table("guild_config").update(fields).eq("guild_id", guild_id).execute()
+
+
+async def run_query(query_func):
+    """
+    Ejecuta una consulta de Supabase (síncrona/bloqueante) en un hilo aparte,
+    para no congelar el event loop de discord.py mientras espera la respuesta de red.
+
+    Uso:
+        rows = await run_query(lambda: supabase.table("custom_triggers").select("*").execute())
+    """
+    return await asyncio.to_thread(query_func)

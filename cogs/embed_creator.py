@@ -138,7 +138,13 @@ class ChannelSelect(discord.ui.ChannelSelect):
         self.parent_view = parent_view
 
     async def callback(self, interaction: discord.Interaction):
-        channel = self.values[0]
+        channel = interaction.guild.get_channel(self.values[0].id)
+        if channel is None:
+            await interaction.response.edit_message(
+                content="⚠️ No pude acceder a ese canal (puede que el bot no tenga permisos ahí).",
+                embed=None, view=None
+            )
+            return
         embed = self.parent_view.state.build()
         await channel.send(embed=embed)
         await interaction.response.edit_message(content=f"✅ Embed enviado a {channel.mention}", embed=None, view=None)

@@ -4,10 +4,11 @@
 """
 
 import discord
+import asyncio
 from discord import app_commands
 from discord.ext import commands
 
-from utils.db import supabase, get_guild_config, update_guild_config
+from utils.db import supabase, get_guild_config, update_guild_config, run_query
 from utils.permissions import admin_check
 
 
@@ -19,7 +20,7 @@ class ReactionRoles(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
-        config = get_guild_config(member.guild.id)
+        config = await asyncio.to_thread(get_guild_config, member.guild.id)
         role_ids = config.get("join_role_ids") or []
         for role_id in role_ids:
             role = member.guild.get_role(role_id)
@@ -107,8 +108,11 @@ class ReactionRoles(commands.Cog):
 
     async def _handle_reaction(self, payload: discord.RawReactionActionEvent, add: bool):
         emoji_str = str(payload.emoji)
-        rows = supabase.table("reaction_roles").select("*") \
-            .eq("message_id", payload.message_id).eq("emoji", emoji_str).execute().data
+        result = await run_query(
+            lambda: supabase.table("reaction_roles").select("*")
+                .eq("message_id", payload.message_id).eq("emoji", emoji_str).execute()
+        )
+        rows = result.data
         if not rows:
             return
 
