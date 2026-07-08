@@ -23,7 +23,6 @@ class General(commands.Cog):
         embed.add_field(name="🖼️ Embeds", value="`/embed-create`", inline=False)
         embed.add_field(name="🛡️ Antispam", value="`/antispam toggle`, `/antispam blacklist-add`, `/antispam blacklist-list`", inline=False)
         embed.add_field(name="🍯 Honeypot", value="`/honeypot-setup`, `/honeypot-disable`", inline=False)
-        embed.add_field(name="👑 Líderes de nación", value="`/helplider`, `/lider asignar-nacion`, `/lider ascender`, `/lider descender`, `/lider quitar-nacion`, `/urgencia`", inline=False)
         embed.add_field(name="🎉 Sorteos", value="`/sorteo`, `/sorteo-terminar`", inline=False)
         embed.add_field(name="🎭 Roles", value="`/reactionrole add`, `/joinrole add`, `/joinrole remove`", inline=False)
         embed.add_field(name="🔨 Administración", value="`/kick`, `/ban`, `/unban`, `/mute`, `/unmute`, `/clear`, `/warn`, `/warns`, `/slowmode`, `/announce`, `/adminrole add`", inline=False)
